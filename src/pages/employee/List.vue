@@ -13,6 +13,7 @@
             <el-table-column width="200" prop="bankCard" label="银行卡号"></el-table-column>
             <el-table-column fixed="right" label="操作">
                 <template v-slot="slot">
+                    <!-- 获取当前行数据 -->
                     <a href="" @click.prevent="toDeleteHandler(slot.row.id)">删除</a>
                     <a href="" @click.prevent="toUpdateHandler(slot.row)">修改</a>
                 </template>
@@ -111,24 +112,34 @@ export default {
             this.visible=false;
         },
         toAddHandler(){
+            this.form={
+                type:"waiter"
+            }
             this.title="添加用户信息"
             this.visible=true;
         },
-        toDeleteHandler(){
+        toDeleteHandler(id){
             //确认
             this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.$message({
+            // 调用后台接口
+            let url="http://localhost:6677/waiter/deleteById?id="+id
+            request.get(url).then((response)=>{
+            this.loadData();
+            this.$message({
             type: 'success',
             message: '删除成功!'
-          });
+            });
+         
+          })
         })
         },
         toUpdateHandler(row){
-            this.title="修改员工信息",
+            this.form=row;
+            this.title="修改员工信息";
             this.visible=true;
         }
     },
